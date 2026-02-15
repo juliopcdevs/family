@@ -364,11 +364,42 @@ docker cp family_prod_mongodb:/backup ./backups/
 
 ---
 
-## 13. Future Improvements (post-MVP)
+## 13. Testing PWA
 
-- [ ] Notificaciones push
+### Desktop
+1. Abrir DevTools → Application tab
+2. Verificar:
+   - Service Worker registrado y activo
+   - Manifest correcto (nombre, iconos, theme color)
+   - Cache Storage tiene assets
+
+### Android (Chrome/Edge)
+1. Abrir app en móvil
+2. Banner "Instalar app" aparece automáticamente
+3. Click en "Instalar"
+4. App se instala en home screen
+5. Abrir app desde home → standalone mode (sin barra navegador)
+6. Verificar que banner no vuelve a aparecer
+
+### iOS (Safari)
+1. Abrir app en iPhone/iPad
+2. Banner aparece con instrucciones
+3. Seguir pasos: botón compartir → "Añadir a pantalla de inicio"
+4. App se añade a home screen
+5. Abrir desde home → standalone mode
+6. Verificar que banner no vuelve a aparecer
+
+### Offline (opcional MVP)
+- Service worker cachea assets
+- App funciona parcialmente offline (solo UI, no API calls)
+
+---
+
+## 14. Future Improvements (post-MVP)
+
+- [ ] Notificaciones push (PWA Push API)
 - [ ] Sincronización tiempo real (WebSockets)
-- [ ] App móvil nativa
+- [ ] Offline mode completo (IndexedDB + sync)
 - [ ] Roles/permisos
 - [ ] Exportar datos (PDF, CSV)
 - [ ] Integración Google Calendar
@@ -379,7 +410,24 @@ docker cp family_prod_mongodb:/backup ./backups/
 
 ---
 
-## Checklist Final
+## 15. Checklist Final PWA
+
+### PWA Features
+- [ ] vite-plugin-pwa instalado
+- [ ] Manifest configurado (nombre, iconos, theme)
+- [ ] Service Worker generado (vite build)
+- [ ] Iconos 192x192 y 512x512 creados
+- [ ] Favicon en public/
+- [ ] Banner Android funcional
+- [ ] Banner iOS funcional
+- [ ] localStorage guarda preferencia dismiss
+- [ ] Instalación en Android testeda
+- [ ] Instalación en iOS testeda
+- [ ] Modo standalone detectado correctamente
+
+---
+
+## 16. Checklist Final
 
 ### Development
 - [ ] Todos los flujos funcionan
@@ -414,6 +462,9 @@ docker cp family_prod_mongodb:/backup ./backups/
 - [ ] WhatsApp share
 - [ ] Multi-usuario (mismos datos)
 - [ ] Recuperar contraseña
+- [ ] PWA instalable en Android
+- [ ] PWA instalable en iOS
+- [ ] Banners PWA funcionan correctamente
 
 ---
 

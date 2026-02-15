@@ -26,6 +26,12 @@ Familias (principalmente padres) que buscan coordinar tareas domésticas y event
 - **HTTP Client**: Axios
 - **Build**: Vite
 - **Estilos**: Tailwind CSS
+- **PWA**: vite-plugin-pwa (Progressive Web App)
+  - Instalable en móvil (iOS y Android)
+  - Banner de instalación para Android
+  - Instrucciones de instalación para iOS
+  - Service Worker para cache
+  - Manifest con iconos 192x192 y 512x512
 
 ### Infraestructura
 - **Contenedores**: Docker + Docker Compose
@@ -564,7 +570,99 @@ Cada widget:
 
 ---
 
-## 11. Testing (opcional para MVP, documentar)
+## 11. PWA (Progressive Web App)
+
+### Instalación en dispositivos móviles
+
+La aplicación es una PWA completa, instalable en móviles iOS y Android.
+
+### Componentes PWA
+
+#### Service Worker
+- Cache de assets estáticos (JS, CSS, iconos)
+- Estrategia: cache-first para assets, network-first para API
+- Skip waiting + clients claim para actualizaciones inmediatas
+
+#### Web App Manifest
+```json
+{
+  "name": "Family Hub",
+  "short_name": "Family",
+  "description": "Gestión familiar compartida",
+  "theme_color": "#2196F3",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+```
+
+#### Banner de instalación (Android)
+- Detecta evento `beforeinstallprompt`
+- Muestra banner azul en la parte superior con:
+  - Texto: "Instala la app en tu dispositivo para acceder más rápido"
+  - Botón "Instalar" (blanco con texto azul)
+  - Botón "×" para cerrar
+- Al instalar o cerrar, se guarda en localStorage para no volver a mostrar
+- Se oculta automáticamente si ya está instalada (standalone mode)
+
+#### Instrucciones iOS
+- Detecta dispositivos iOS (iPad, iPhone, iPod)
+- Muestra banner azul con instrucciones:
+  - Icono de compartir (flecha hacia arriba)
+  - Texto: "Para instalar: pulsa [icono] y luego **Añadir a pantalla de inicio**"
+  - Botón "×" para cerrar
+- Se guarda preferencia en localStorage
+- Se oculta si ya está en modo standalone
+
+#### Composable: usePwaInstall()
+```typescript
+// resources/js/composables/usePwaInstall.ts
+{
+  showAndroidBanner: computed boolean,
+  showIosBanner: computed boolean,
+  install: () => Promise<void>,
+  dismiss: () => void
+}
+```
+
+### Integración en Layout
+
+**AppLayout.vue** incluye los banners en la parte superior:
+1. Banner Android (si aplica)
+2. Banner iOS (si aplica)
+3. Resto del layout (navbar, sidebar, content)
+
+### Iconos requeridos
+
+Ubicación: `public/icons/`
+- `icon-192x192.png` - Icono estándar
+- `icon-512x512.png` - Icono alta resolución + maskable
+
+**Formato**: PNG con fondo sólido (color primary #2196F3 o blanco con logo)
+
+---
+
+## 12. Testing (opcional para MVP, documentar)
 
 ### Backend
 - Feature tests: endpoints principales

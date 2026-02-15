@@ -146,6 +146,7 @@ npm install
 npm install vue@next vue-router@4 axios pinia
 npm install -D @vitejs/plugin-vue typescript @types/node
 npm install -D tailwindcss postcss autoprefixer
+npm install -D vite-plugin-pwa
 npx tailwindcss init -p
 ```
 
@@ -154,6 +155,7 @@ npx tailwindcss init -p
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 export default defineConfig({
@@ -168,6 +170,47 @@ export default defineConfig({
                     base: null,
                     includeAbsolute: false,
                 },
+            },
+        }),
+        VitePWA({
+            registerType: 'prompt',
+            injectRegister: false,
+            buildBase: '/',
+            includeAssets: ['favicon.ico', 'icons/*.png'],
+            manifest: {
+                name: 'Family Hub',
+                short_name: 'Family',
+                description: 'Gestión familiar compartida',
+                theme_color: '#2196F3',
+                background_color: '#FFFFFF',
+                display: 'standalone',
+                orientation: 'portrait',
+                scope: '/',
+                start_url: '/',
+                icons: [
+                    {
+                        src: '/icons/icon-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                    },
+                    {
+                        src: '/icons/icon-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                    },
+                    {
+                        src: '/icons/icon-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'any maskable',
+                    },
+                ],
+            },
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+                navigateFallback: null,
+                clientsClaim: true,
+                skipWaiting: true,
             },
         }),
     ],
@@ -604,7 +647,31 @@ Route::get('/{any}', fn() => view('app'))->where('any', '.*');
 
 ---
 
-## 10. Inicializar Git
+## 10. Crear iconos PWA
+
+Crear iconos en `public/icons/`:
+
+```bash
+mkdir -p public/icons
+```
+
+**Iconos necesarios:**
+- `public/icons/icon-192x192.png` (192x192px)
+- `public/icons/icon-512x512.png` (512x512px)
+- `public/favicon.ico`
+
+**Diseño sugerido:**
+- Fondo: color primary #2196F3
+- Logo/texto: "Family" o "FH" en blanco
+- Bordes redondeados para maskable
+
+Usar herramientas como:
+- https://realfavicongenerator.net/
+- Figma/Photoshop para diseño
+
+---
+
+## 11. Inicializar Git
 
 ```bash
 git init
@@ -614,7 +681,7 @@ git commit -m "chore: initial setup Laravel + Vue + MongoDB + Docker"
 
 ---
 
-## 11. Verificar que todo funciona
+## 12. Verificar que todo funciona
 
 ```bash
 # Copiar .env
