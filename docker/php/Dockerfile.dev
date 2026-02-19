@@ -1,0 +1,35 @@
+FROM php:8.4-fpm
+
+WORKDIR /var/www
+
+# Instalar dependencias
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    pkg-config
+
+# Instalar extensiones PHP
+RUN docker-php-ext-install pcntl bcmath
+
+# Instalar extensión MongoDB
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Instalar Node.js 22.x
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs
+
+# Permisos
+RUN chown -R www-data:www-data /var/www
+
+EXPOSE 9000
+CMD ["php-fpm"]
