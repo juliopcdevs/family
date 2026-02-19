@@ -6,7 +6,10 @@
       <button @click="nextMonth" class="text-gray-600 hover:text-gray-800 p-2">&#9654;</button>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div v-if="loading" class="flex justify-center py-12">
+      <div class="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+    </div>
+    <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
       <div class="grid grid-cols-7 text-center text-xs font-medium text-gray-500 border-b border-gray-100">
         <div v-for="d in weekDays" :key="d" class="py-2">{{ d }}</div>
       </div>
@@ -49,8 +52,8 @@
           <input v-model="modalDate" type="date" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none" />
         </div>
         <div class="flex gap-3">
-          <button @click="saveEvent" class="flex-1 bg-primary text-white py-2.5 rounded-lg font-medium hover:bg-primary/90">
-            Guardar
+          <button @click="saveEvent" :disabled="saving" class="flex-1 bg-primary text-white py-2.5 rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50">
+            {{ saving ? 'Guardando...' : 'Guardar' }}
           </button>
           <button v-if="editingEvent" @click="deleteEvent" class="px-4 py-2.5 text-error border border-error/30 rounded-lg hover:bg-error/5">
             Eliminar
@@ -65,12 +68,16 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import calendarService from '@/services/calendar.service';
+import { useToast } from '@/composables/useToast';
 import type { CalendarEvent } from '@/types';
 
+const { success, error: showError } = useToast();
 const now = new Date();
 const month = ref(now.getMonth() + 1);
 const year = ref(now.getFullYear());
 const events = ref<CalendarEvent[]>([]);
+const loading = ref(true);
+const saving = ref(false);
 const showModal = ref(false);
 const modalTitle = ref('');
 const modalDate = ref('');
@@ -123,7 +130,10 @@ const calendarDays = computed<CalDay[]>(() => {
 });
 
 async function fetchEvents() {
-  events.value = await calendarService.getEvents(month.value, year.value);
+  loading.value = true;
+  try { events.value = await calendarService.getEvents(month.value, year.value); }
+  catch { showError('Error al cargar eventos'); }
+  finally { loading.value = false; }
 }
 
 onMounted(fetchEvents);
@@ -160,21 +170,30 @@ function closeModal() {
 
 async function saveEvent() {
   if (!modalTitle.value.trim()) return;
-  if (editingEvent.value) {
-    const updated = await calendarService.updateEvent(editingEvent.value._id, modalTitle.value, modalDate.value);
-    const idx = events.value.findIndex(e => e._id === updated._id);
-    if (idx >= 0) events.value[idx] = updated;
-  } else {
-    const created = await calendarService.createEvent(modalTitle.value, modalDate.value);
-    events.value.push(created);
-  }
-  closeModal();
+  saving.value = true;
+  try {
+    if (editingEvent.value) {
+      const updated = await calendarService.updateEvent(editingEvent.value._id, modalTitle.value, modalDate.value);
+      const idx = events.value.findIndex(e => e._id === updated._id);
+      if (idx >= 0) events.value[idx] = updated;
+      success('Evento actualizado');
+    } else {
+      const created = await calendarService.createEvent(modalTitle.value, modalDate.value);
+      events.value.push(created);
+      success('Evento creado');
+    }
+    closeModal();
+  } catch { showError('Error al guardar evento'); }
+  finally { saving.value = false; }
 }
 
 async function deleteEvent() {
   if (!editingEvent.value) return;
-  await calendarService.deleteEvent(editingEvent.value._id);
-  events.value = events.value.filter(e => e._id !== editingEvent.value!._id);
-  closeModal();
+  try {
+    await calendarService.deleteEvent(editingEvent.value._id);
+    events.value = events.value.filter(e => e._id !== editingEvent.value!._id);
+    closeModal();
+    success('Evento eliminado');
+  } catch { showError('Error al eliminar evento'); }
 }
 </script>

@@ -53,11 +53,14 @@ class AuthController extends Controller
             ], 403);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $newToken = $user->createToken('auth_token');
+        // Use accessToken hash directly (id|token format breaks with MongoDB ObjectIds)
+        $parts = explode('|', $newToken->plainTextToken, 2);
+        $plainToken = $parts[1] ?? $newToken->plainTextToken;
 
         return response()->json([
             'user' => $user,
-            'token' => $token,
+            'token' => $plainToken,
         ]);
     }
 

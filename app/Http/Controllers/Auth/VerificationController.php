@@ -29,17 +29,17 @@ class VerificationController extends Controller
         $user = User::findOrFail($id);
 
         if (!hash_equals($hash, sha1($user->email))) {
-            return redirect(config('app.url') . '/verify-email?status=invalid');
+            return redirect(config('app.frontend_url') . '/verify-email?status=invalid');
         }
 
         if ($user->hasVerifiedEmail()) {
-            return redirect(config('app.url') . '/verify-email?status=already-verified');
+            return redirect(config('app.frontend_url') . '/verify-email?status=already-verified');
         }
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
         }
 
-        return redirect(config('app.url') . '/verify-email?status=verified');
+        return redirect(config('app.frontend_url') . '/verify-email?status=verified');
     }
 }

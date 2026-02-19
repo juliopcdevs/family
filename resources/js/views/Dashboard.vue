@@ -1,5 +1,8 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div v-if="loading" class="flex justify-center py-12">
+    <div class="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+  </div>
+  <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="bg-white rounded-xl shadow-sm p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-800">Lista de compra</h3>
@@ -63,10 +66,15 @@ import { ref, onMounted } from 'vue';
 import dashboardService from '@/services/dashboard.service';
 import type { DashboardData } from '@/types';
 
+const loading = ref(true);
 const data = ref<DashboardData>({ shopping: [], events: [], tasks: [], birthdays: [] });
 
 onMounted(async () => {
-  data.value = await dashboardService.getDashboard();
+  try {
+    data.value = await dashboardService.getDashboard();
+  } finally {
+    loading.value = false;
+  }
 });
 
 function formatDate(dateStr: string): string {
