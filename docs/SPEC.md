@@ -15,8 +15,8 @@ Familias (principalmente padres) que buscan coordinar tareas domésticas y event
 ## 2. Stack Tecnológico
 
 ### Backend
-- **Framework**: Laravel 11.x (PHP 8.2+)
-- **Base de datos**: MongoDB 7.0
+- **Framework**: Laravel 12.x (PHP 8.4+)
+- **Base de datos**: MongoDB 8.0
 - **Autenticación**: Laravel Sanctum (SPA)
 - **Email**: SMTP (configuración en .env)
 

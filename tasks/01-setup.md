@@ -34,7 +34,7 @@ family/
 
 ```bash
 cd /home/user/POCS/family
-composer create-project laravel/laravel . "11.*"
+composer create-project laravel/laravel . "12.*"
 ```
 
 ---
@@ -276,7 +276,7 @@ export default {
 ### docker/php/Dockerfile.dev
 
 ```dockerfile
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 WORKDIR /var/www
 
@@ -323,7 +323,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM php:8.2-fpm-alpine
+FROM php:8.4-fpm-alpine
 WORKDIR /var/www
 
 RUN apk add --no-cache \
@@ -475,7 +475,7 @@ services:
       - app
 
   mongodb:
-    image: mongo:7.0
+    image: mongo:8.0
     container_name: family_mongodb
     restart: unless-stopped
     environment:
@@ -570,7 +570,7 @@ services:
       - "traefik.docker.network=proxy"
 
   mongodb:
-    image: mongo:7.0
+    image: mongo:8.0
     container_name: family_prod_mongodb
     restart: always
     environment:
@@ -713,7 +713,7 @@ docker compose logs -f
 
 ## Checklist de completado
 
-- [ ] Laravel 11 instalado
+- [ ] Laravel 12 instalado
 - [ ] MongoDB configurado
 - [ ] Sanctum instalado
 - [ ] Vue + Vite + TypeScript configurado

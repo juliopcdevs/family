@@ -213,7 +213,7 @@ Aplicación web para gestión familiar compartida.
 - Multi-usuario (familias)
 
 ## Stack
-- Laravel 11 + MongoDB
+- Laravel 12 + MongoDB
 - Vue 3 + TypeScript
 - Docker + Traefik
 - Tailwind CSS
