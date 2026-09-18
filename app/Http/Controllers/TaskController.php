@@ -11,13 +11,17 @@ class TaskController extends Controller
     {
         $familyId = $request->user()->family_id;
 
-        $pending = Task::where('family_id', $familyId)
+        $pending = Task::with('user:name')
+            ->where('family_id', $familyId)
             ->pending()
-            ->get();
+            ->get()
+            ->map(fn ($t) => $this->formatTask($t));
 
-        $completed = Task::where('family_id', $familyId)
+        $completed = Task::with('user:name')
+            ->where('family_id', $familyId)
             ->completed()
-            ->get();
+            ->get()
+            ->map(fn ($t) => $this->formatTask($t));
 
         return response()->json([
             'pending' => $pending,
@@ -39,7 +43,9 @@ class TaskController extends Controller
             'created_by' => $request->user()->id,
         ]);
 
-        return response()->json($task, 201);
+        $task->load('user:name');
+
+        return response()->json($this->formatTask($task), 201);
     }
 
     public function complete(Request $request, $id)
@@ -48,11 +54,13 @@ class TaskController extends Controller
             ->findOrFail($id);
 
         $task->update([
-            'is_completed' => true,
-            'completed_at' => now(),
+            'is_completed' => !$task->is_completed,
+            'completed_at' => !$task->is_completed ? now() : null,
         ]);
 
-        return response()->json($task);
+        $task->load('user:name');
+
+        return response()->json($this->formatTask($task));
     }
 
     public function destroy(Request $request, $id)
@@ -63,5 +71,14 @@ class TaskController extends Controller
         $task->delete();
 
         return response()->json(['message' => 'Task deleted']);
+    }
+
+    private function formatTask(Task $task): array
+    {
+        $data = $task->toArray();
+        $data['creator_name'] = $task->user?->name ?? 'Desconocido';
+        unset($data['user']);
+
+        return $data;
     }
 }
