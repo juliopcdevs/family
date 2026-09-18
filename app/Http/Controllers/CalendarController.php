@@ -30,12 +30,14 @@ class CalendarController extends Controller
         $request->validate([
             'title' => 'required|string|max:200',
             'date' => 'required|date',
+            'time' => 'nullable|string|date_format:H:i',
         ]);
 
         $event = CalendarEvent::create([
             'family_id' => $request->user()->family_id,
             'title' => $request->title,
             'date' => Carbon::parse($request->date),
+            'time' => $request->time,
             'created_by' => $request->user()->id,
         ]);
 
@@ -55,6 +57,7 @@ class CalendarController extends Controller
         $request->validate([
             'title' => 'required|string|max:200',
             'date' => 'required|date',
+            'time' => 'nullable|string|date_format:H:i',
         ]);
 
         $event = CalendarEvent::where('family_id', $request->user()->family_id)
@@ -63,6 +66,7 @@ class CalendarController extends Controller
         $event->update([
             'title' => $request->title,
             'date' => Carbon::parse($request->date),
+            'time' => $request->time,
         ]);
 
         return response()->json($event);

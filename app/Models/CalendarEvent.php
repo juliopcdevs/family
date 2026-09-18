@@ -13,6 +13,7 @@ class CalendarEvent extends Model
         'family_id',
         'title',
         'date',
+        'time',
         'created_by',
     ];
 

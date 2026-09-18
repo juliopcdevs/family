@@ -7,13 +7,13 @@ export default {
     return data;
   },
 
-  async createEvent(title: string, date: string) {
-    const { data } = await api.post('/calendar/events', { title, date });
+  async createEvent(title: string, date: string, time: string | null) {
+    const { data } = await api.post('/calendar/events', { title, date, time });
     return data as CalendarEvent;
   },
 
-  async updateEvent(id: string, title: string, date: string) {
-    const { data } = await api.put(`/calendar/events/${id}`, { title, date });
+  async updateEvent(id: string, title: string, date: string, time: string | null) {
+    const { data } = await api.put(`/calendar/events/${id}`, { title, date, time });
     return data as CalendarEvent;
   },
 
