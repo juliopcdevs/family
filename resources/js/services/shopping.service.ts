@@ -21,4 +21,8 @@ export default {
     const { data } = await api.post(`/shopping/remove/${id}`);
     return data as ShoppingListItem;
   },
+
+  async deleteItem(id: string) {
+    await api.delete(`/shopping/${id}`);
+  },
 };

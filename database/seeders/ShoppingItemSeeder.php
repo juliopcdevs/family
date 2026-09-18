@@ -11,25 +11,62 @@ class ShoppingItemSeeder extends Seeder
     public function run(): void
     {
         $items = [
-            'Pan', 'Leche', 'Huevos', 'Tomates', 'Lechuga',
-            'Queso', 'Jamón', 'Pollo', 'Arroz', 'Pasta',
-            'Aceite', 'Sal', 'Azúcar', 'Café', 'Té',
-            'Galletas', 'Cereales', 'Yogur', 'Mantequilla', 'Manzanas',
-            'Plátanos', 'Naranjas', 'Patatas', 'Cebolla', 'Ajo',
-            'Zanahorias', 'Pimientos', 'Pepino', 'Agua', 'Zumo',
-            'Cerveza', 'Vino', 'Atún', 'Sardinas', 'Tomate frito',
-            'Mayonesa', 'Ketchup', 'Mostaza', 'Pimienta', 'Papel higiénico',
-            'Jabón', 'Champú', 'Detergente', 'Suavizante', 'Lavavajillas',
-            'Bolsas basura', 'Servilletas', 'Papel cocina', 'Aluminio', 'Limones',
+            // Panadería
+            'Pan', 'Pan de molde', 'Tostadas',
+            // Lácteos
+            'Leche', 'Yogur', 'Queso', 'Mantequilla', 'Nata',
+            'Queso rallado', 'Leche sin lactosa', 'Leche de avena',
+            // Huevos
+            'Huevos',
+            // Carnes
+            'Pollo', 'Carne', 'Ternera', 'Cerdo', 'Pavo',
+            'Jamón', 'Salchichas', 'Chorizo', 'Bacon',
+            // Pescado y marisco
+            'Atún', 'Sardinas', 'Salmón', 'Gambas', 'Merluza', 'Mejillones',
+            // Frutas
+            'Manzanas', 'Plátanos', 'Naranjas', 'Limones', 'Fresas',
+            'Uvas', 'Sandía', 'Melón', 'Aguacate',
+            // Verduras y hortalizas
+            'Tomates', 'Lechuga', 'Cebolla', 'Ajo', 'Zanahorias',
+            'Pimientos', 'Pepino', 'Patatas', 'Espinacas',
+            'Champiñones', 'Calabacín', 'Brócoli', 'Maíz',
+            'Judías verdes', 'Aceitunas',
+            // Despensa
+            'Arroz', 'Pasta', 'Macarrones', 'Espaguetis', 'Fideos',
+            'Aceite', 'Sal', 'Azúcar',
+            'Pimienta', 'Harina', 'Lentejas', 'Garbanzos',
+            'Caldo', 'Vinagre', 'Tomate frito',
+            'Miel', 'Mermelada', 'Chocolate', 'Frutos secos',
+            'Tortillas de trigo',
+            // Salsas
+            'Mayonesa', 'Ketchup', 'Mostaza', 'Nutella',
+            // Desayuno y snacks
+            'Café', 'Té', 'Galletas', 'Cereales', 'Palomitas',
+            // Bebidas
+            'Agua', 'Zumo', 'Cerveza', 'Vino',
+            'Refresco', 'Coca-Cola', 'Tónica',
+            // Congelados
+            'Pizza congelada', 'Helado', 'Croquetas',
+            // Limpieza
+            'Detergente', 'Suavizante', 'Lavavajillas',
+            'Lejía', 'Estropajo', 'Ambientador',
+            'Bolsas basura', 'Servilletas', 'Papel cocina', 'Aluminio',
+            // Higiene
+            'Papel higiénico', 'Jabón', 'Champú',
+            'Pasta de dientes', 'Desodorante', 'Gel de ducha',
+            'Crema hidratante',
+            // Hogar
+            'Pilas',
         ];
 
         ShoppingItem::truncate();
 
         foreach ($items as $item) {
+            $slug = Str::slug($item);
             ShoppingItem::create([
                 'name' => $item,
-                'slug' => Str::slug($item),
-                'image_url' => null,
+                'slug' => $slug,
+                'image_url' => '/images/shopping/' . $slug . '.svg',
             ]);
         }
 

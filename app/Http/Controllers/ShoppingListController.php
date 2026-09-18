@@ -65,20 +65,30 @@ class ShoppingListController extends Controller
 
         $familyId = $request->user()->family_id;
 
-        $query = ShoppingListItem::where('family_id', $familyId);
+        $item = null;
 
-        if ($request->is_predefined && $request->item_slug) {
-            $query->where('item_slug', $request->item_slug);
-        } else {
-            $query->where('item_name', $request->item_name);
+        if ($request->item_slug) {
+            $item = ShoppingListItem::where('family_id', $familyId)
+                ->where('item_slug', $request->item_slug)
+                ->first();
         }
 
-        $item = $query->first();
+        if (!$item) {
+            $item = ShoppingListItem::where('family_id', $familyId)
+                ->whereRaw(['item_name' => new \MongoDB\BSON\Regex('^' . preg_quote($request->item_name) . '$', 'i')])
+                ->first();
+        }
 
         if ($item) {
             $item->is_in_cart = true;
             $item->usage_count++;
             $item->last_used_at = now();
+            if ($request->item_slug && !$item->item_slug) {
+                $item->item_slug = $request->item_slug;
+            }
+            if ($request->image_url && !$item->image_url) {
+                $item->image_url = $request->image_url;
+            }
             $item->save();
         } else {
             $item = ShoppingListItem::create([
@@ -114,5 +124,15 @@ class ShoppingListController extends Controller
         $item->save();
 
         return response()->json($item);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $item = ShoppingListItem::where('family_id', $request->user()->family_id)
+            ->findOrFail($id);
+
+        $item->delete();
+
+        return response()->json(['message' => 'Eliminado']);
     }
 }

@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/shopping/search', [ShoppingListController::class, 'search']);
         Route::post('/shopping/add', [ShoppingListController::class, 'add']);
         Route::post('/shopping/remove/{id}', [ShoppingListController::class, 'remove']);
+        Route::delete('/shopping/{id}', [ShoppingListController::class, 'destroy']);
 
         // Calendar
         Route::apiResource('calendar/events', CalendarController::class);
