@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Traefik termina el TLS: confiar en el proxy para que Laravel
+        // detecte https (X-Forwarded-Proto) y genere URLs de assets con https.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'has.family' => \App\Http\Middleware\EnsureFamilyMembership::class,
         ]);
