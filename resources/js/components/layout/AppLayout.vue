@@ -17,15 +17,27 @@
       <button class="text-white/70 hover:text-white text-lg leading-none shrink-0" @click="dismiss()">&times;</button>
     </div>
 
-    <header class="md:hidden shrink-0 bg-white border-b border-gray-200 px-4 py-2.5 flex items-center gap-2.5">
-      <svg class="w-7 h-7 text-primary" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="8" y="12" width="48" height="40" rx="6" stroke="currentColor" stroke-width="3"/>
-        <path d="M20 8v8M44 8v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="24" cy="34" r="3" fill="currentColor"/>
-        <circle cx="40" cy="34" r="3" fill="currentColor"/>
-        <path d="M24 44c2 3 6 4 8 4s6-1 8-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-      <span class="text-base font-bold text-primary">Family Hub</span>
+    <header class="md:hidden shrink-0 bg-white border-b border-gray-200 px-4 py-2.5 flex items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <svg class="w-7 h-7 text-primary shrink-0" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="12" width="48" height="40" rx="6" stroke="currentColor" stroke-width="3"/>
+          <path d="M20 8v8M44 8v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="24" cy="34" r="3" fill="currentColor"/>
+          <circle cx="40" cy="34" r="3" fill="currentColor"/>
+          <path d="M24 44c2 3 6 4 8 4s6-1 8-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span class="text-base font-bold text-primary truncate">Family Hub</span>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <router-link :to="{ name: 'family-settings' }" aria-label="Ajustes"
+          class="p-2 rounded-lg text-gray-500 hover:bg-gray-50"
+          exact-active-class="!text-primary">
+          <NavIcon name="settings" />
+        </router-link>
+        <button @click="handleLogout" aria-label="Cerrar sesion" class="p-2 rounded-lg text-gray-500 hover:bg-gray-50">
+          <NavIcon name="logout" />
+        </button>
+      </div>
     </header>
 
     <aside class="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-gray-200 z-40">
