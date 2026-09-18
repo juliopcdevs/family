@@ -37,7 +37,9 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
 
 RUN chown -R www-data:www-data /var/www
 
-USER www-data
+# El master de php-fpm corre como root (baja los workers a www-data via pool).
+# No fijamos USER www-data: el deploy necesita chown via `docker exec` como root
+# (ver DEPLOY.md / patron whatmovie). Los ficheros ya son de www-data.
 
 EXPOSE 9000
 CMD ["php-fpm"]
