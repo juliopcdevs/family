@@ -79,6 +79,10 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         port: 5180,
+        // VITE_HMR_HOST=<IP LAN> en .env para probar desde el movil
+        hmr: process.env.VITE_HMR_HOST ? { host: process.env.VITE_HMR_HOST } : undefined,
+        // Vite 6+ solo permite CORS desde localhost; en dev aceptamos cualquier origen
+        cors: true,
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

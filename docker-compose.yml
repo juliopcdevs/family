@@ -51,6 +51,8 @@ services:
       - ./:/var/www
     ports:
       - "5180:5180"
+    environment:
+      VITE_HMR_HOST: ${VITE_HMR_HOST:-}
     command: npm run dev -- --host --port 5180
     networks:
       - family_network
