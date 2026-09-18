@@ -9,7 +9,7 @@
         <router-link :to="{ name: 'shopping' }" class="text-sm text-primary hover:underline">Ver todo</router-link>
       </div>
       <ul v-if="data.shopping.length" class="space-y-2">
-        <li v-for="item in data.shopping" :key="item._id" class="flex items-center gap-2 text-sm">
+        <li v-for="item in data.shopping" :key="item.id" class="flex items-center gap-2 text-sm">
           <span class="w-2 h-2 rounded-full" :class="item.is_in_cart ? 'bg-success' : 'bg-gray-300'"></span>
           <span>{{ item.item_name }}</span>
         </li>
@@ -22,10 +22,13 @@
         <h3 class="text-lg font-semibold text-gray-800">Proximos eventos</h3>
         <router-link :to="{ name: 'calendar' }" class="text-sm text-primary hover:underline">Ver todo</router-link>
       </div>
+      <p class="text-sm text-gray-500 mb-3">Hoy es <span class="font-medium text-gray-700">{{ todayLabel }}</span></p>
       <ul v-if="data.events.length" class="space-y-2">
-        <li v-for="event in data.events" :key="event._id" class="flex items-center justify-between text-sm">
-          <span>{{ event.title }}</span>
-          <span class="text-gray-400">{{ formatDate(event.date) }}</span>
+        <li v-for="event in data.events" :key="event.id" class="flex items-center justify-between text-sm">
+          <span :class="isToday(event.date) ? 'text-error font-semibold' : ''">{{ event.title }}</span>
+          <span :class="isToday(event.date) ? 'text-error font-semibold' : 'text-gray-400'">
+            {{ isToday(event.date) ? 'Hoy' : formatDate(event.date) }}
+          </span>
         </li>
       </ul>
       <p v-else class="text-sm text-gray-400">Sin eventos proximos</p>
@@ -37,7 +40,7 @@
         <router-link :to="{ name: 'tasks' }" class="text-sm text-primary hover:underline">Ver todo</router-link>
       </div>
       <ul v-if="data.tasks.length" class="space-y-2">
-        <li v-for="task in data.tasks" :key="task._id" class="flex items-center gap-2 text-sm">
+        <li v-for="task in data.tasks" :key="task.id" class="flex items-center gap-2 text-sm">
           <span class="w-4 h-4 border-2 border-gray-300 rounded"></span>
           <span>{{ task.title }}</span>
         </li>
@@ -51,7 +54,7 @@
         <router-link :to="{ name: 'birthdays' }" class="text-sm text-primary hover:underline">Ver todo</router-link>
       </div>
       <ul v-if="data.birthdays.length" class="space-y-2">
-        <li v-for="b in data.birthdays" :key="b._id" class="flex items-center justify-between text-sm">
+        <li v-for="b in data.birthdays" :key="b.id" class="flex items-center justify-between text-sm">
           <span>{{ b.person_name }}</span>
           <span class="text-gray-400">en {{ b.days_until_birthday }} dias</span>
         </li>
@@ -62,12 +65,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import dashboardService from '@/services/dashboard.service';
 import type { DashboardData } from '@/types';
 
 const loading = ref(true);
 const data = ref<DashboardData>({ shopping: [], events: [], tasks: [], birthdays: [] });
+
+const todayLabel = computed(() => {
+  return new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+});
 
 onMounted(async () => {
   try {
@@ -76,6 +83,15 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const todayStr = computed(() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+});
+
+function isToday(dateStr: string): boolean {
+  return dateStr.startsWith(todayStr.value);
+}
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);

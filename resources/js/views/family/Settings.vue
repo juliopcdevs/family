@@ -17,7 +17,7 @@
       <div v-if="family.members" class="pt-4 border-t border-gray-100">
         <p class="text-sm text-gray-500 mb-2">Miembros ({{ family.members.length }})</p>
         <ul class="space-y-2">
-          <li v-for="member in family.members" :key="member._id" class="flex items-center gap-2">
+          <li v-for="member in family.members" :key="member.id" class="flex items-center gap-2">
             <div class="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-medium">{{ member.name.charAt(0).toUpperCase() }}</div>
             <span class="text-sm">{{ member.name }}</span>
           </li>

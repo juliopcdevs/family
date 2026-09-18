@@ -11,7 +11,7 @@
       <div v-if="birthdays.length" class="space-y-3">
         <div
           v-for="b in birthdays"
-          :key="b._id"
+          :key="b.id"
           class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between"
         >
           <div class="flex items-center gap-4">
@@ -30,7 +30,7 @@
             <p class="text-xs text-gray-400">dias</p>
             <div class="flex gap-2 mt-1">
               <button @click="openForm(b)" class="text-xs text-gray-400 hover:text-primary">Editar</button>
-              <button @click="remove(b._id)" class="text-xs text-gray-400 hover:text-error">Eliminar</button>
+              <button @click="remove(b.id)" class="text-xs text-gray-400 hover:text-error">Eliminar</button>
             </div>
           </div>
         </div>
@@ -61,10 +61,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import birthdayService from '@/services/birthday.service';
-import { useToast } from '@/composables/useToast';
 import type { Birthday } from '@/types';
 
-const { success, error: showError } = useToast();
 const loading = ref(true);
 const saving = ref(false);
 const birthdays = ref<Birthday[]>([]);
@@ -75,7 +73,6 @@ const editing = ref<Birthday | null>(null);
 
 onMounted(async () => {
   try { birthdays.value = await birthdayService.getBirthdays(); }
-  catch { showError('Error al cargar cumpleanos'); }
   finally { loading.value = false; }
 });
 
@@ -102,28 +99,22 @@ async function save() {
   saving.value = true;
   try {
     if (editing.value) {
-      const updated = await birthdayService.updateBirthday(editing.value._id, formName.value, formDate.value);
-      const idx = birthdays.value.findIndex(b => b._id === updated._id);
+      const updated = await birthdayService.updateBirthday(editing.value.id, formName.value, formDate.value);
+      const idx = birthdays.value.findIndex(b => b.id === updated.id);
       if (idx >= 0) birthdays.value[idx] = updated;
-      success('Cumpleanos actualizado');
     } else {
       const created = await birthdayService.createBirthday(formName.value, formDate.value);
       birthdays.value.push(created);
-      success('Cumpleanos agregado');
     }
     birthdays.value.sort((a, b) => a.days_until_birthday - b.days_until_birthday);
     closeForm();
-  } catch { showError('Error al guardar cumpleanos'); }
-  finally { saving.value = false; }
+  } finally { saving.value = false; }
 }
 
 async function remove(id: string) {
   if (!confirm('Eliminar este cumpleanos?')) return;
-  try {
-    await birthdayService.deleteBirthday(id);
-    birthdays.value = birthdays.value.filter(b => b._id !== id);
-    success('Cumpleanos eliminado');
-  } catch { showError('Error al eliminar'); }
+  await birthdayService.deleteBirthday(id);
+  birthdays.value = birthdays.value.filter(b => b.id !== id);
 }
 
 function formatDate(dateStr: string): string {

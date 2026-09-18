@@ -1,5 +1,5 @@
 export interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   email_verified_at: string | null;
@@ -10,7 +10,7 @@ export interface User {
 }
 
 export interface Family {
-  _id: string;
+  id: string;
   name: string;
   code: string;
   created_by: string;
@@ -20,14 +20,14 @@ export interface Family {
 }
 
 export interface ShoppingItem {
-  _id: string;
+  id: string;
   name: string;
   slug: string;
   image_url: string | null;
 }
 
 export interface ShoppingListItem {
-  _id: string;
+  id: string;
   family_id: string;
   item_name: string;
   item_slug: string | null;
@@ -40,26 +40,28 @@ export interface ShoppingListItem {
 }
 
 export interface CalendarEvent {
-  _id: string;
+  id: string;
   family_id: string;
   title: string;
   date: string;
+  time: string | null;
   created_by: string;
   created_at: string;
 }
 
 export interface Task {
-  _id: string;
+  id: string;
   family_id: string;
   title: string;
   is_completed: boolean;
   completed_at: string | null;
   created_by: string;
+  creator_name: string;
   created_at: string;
 }
 
 export interface Birthday {
-  _id: string;
+  id: string;
   family_id: string;
   person_name: string;
   birth_date: string;
