@@ -18,3 +18,15 @@
 .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Deja hueco bajo el contenido para el navbar inferior fijo (altura h-14 = 3.5rem)
+   mas el safe-area del dispositivo. Solo en movil; en desktop no hay navbar. */
+.pb-nav {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+    .pb-nav {
+        padding-bottom: 0;
+    }
+}

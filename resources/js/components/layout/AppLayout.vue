@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-dvh md:h-auto md:min-h-screen bg-gray-50 overflow-hidden md:overflow-visible">
+  <div class="min-h-screen bg-gray-50">
     <div v-if="showAndroidBanner" class="shrink-0 bg-primary text-white px-4 py-2 flex items-center justify-between text-sm">
       <span>Instala la app en tu dispositivo para acceder más rápido</span>
       <div class="flex items-center gap-2 ml-3 shrink-0">
@@ -17,7 +17,7 @@
       <button class="text-white/70 hover:text-white text-lg leading-none shrink-0" @click="dismiss()">&times;</button>
     </div>
 
-    <header class="md:hidden shrink-0 bg-white border-b border-gray-200 px-4 py-2.5 flex items-center justify-between gap-2.5">
+    <header class="md:hidden sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-2.5 flex items-center justify-between gap-2.5">
       <div class="flex items-center gap-2.5 min-w-0">
         <svg class="w-7 h-7 text-primary shrink-0" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="8" y="12" width="48" height="40" rx="6" stroke="currentColor" stroke-width="3"/>
@@ -74,13 +74,13 @@
       </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto md:ml-60 md:overflow-visible">
+    <main class="md:ml-60 pb-nav md:pb-0">
       <div class="p-4 md:p-6">
         <router-view />
       </div>
     </main>
 
-    <nav class="md:hidden shrink-0 bg-white border-t border-gray-200 safe-bottom">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 safe-bottom">
       <div class="flex justify-around items-center h-14">
         <router-link v-for="item in navItems" :key="item.name" :to="{ name: item.route }"
           class="flex flex-col items-center justify-center flex-1 h-full text-gray-400"
