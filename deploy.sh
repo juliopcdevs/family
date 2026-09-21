@@ -367,6 +367,14 @@ laravel_setup() {
     docker cp "$app_container":/var/www/public/build public/build 2>/dev/null || log_warning "No build assets found (may be normal for first deploy)"
     log_success "Assets copied to host"
 
+    # PWA: publicar sw.js / workbox / manifest en la raiz de public para que el
+    # service worker tenga scope '/' y la app sea instalable.
+    log_info "Publishing PWA files at public root..."
+    cp -f public/build/sw.js public/sw.js 2>/dev/null || true
+    cp -f public/build/workbox-*.js public/ 2>/dev/null || true
+    cp -f public/build/manifest.webmanifest public/manifest.webmanifest 2>/dev/null || true
+    log_success "PWA files published"
+
     # Generate APP_KEY if empty
     if grep -q "^APP_KEY=$" .env 2>/dev/null; then
         log_info "Generating APP_KEY..."

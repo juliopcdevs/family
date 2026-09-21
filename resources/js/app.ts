@@ -9,6 +9,16 @@ import '../css/app.css';
 // (si se importara solo desde una ruta lazy, el evento ya habria pasado).
 import '@/composables/usePwaInstall';
 
+// Registrar el service worker en la raiz (scope '/') para que la PWA sea
+// instalable. Solo en produccion: en dev un SW con scope '/' interfiere.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((e) => {
+      console.log('SW registration failed:', e);
+    });
+  });
+}
+
 const app = createApp(App);
 
 app.use(createPinia());

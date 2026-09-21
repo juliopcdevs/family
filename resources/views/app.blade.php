@@ -11,7 +11,12 @@
     <meta property="og:url" content="{{ config('app.url') }}">
     <title>{{ config('app.name') }}</title>
     <link rel="icon" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Family Hub">
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
 </head>
 <body>
