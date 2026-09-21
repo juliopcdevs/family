@@ -27,7 +27,7 @@
     <div class="bg-white rounded-xl shadow-sm p-6 space-y-3">
       <div>
         <p class="text-sm font-medium text-gray-700">Aplicacion</p>
-        <p class="text-xs text-gray-400">Instalala en tu movil para acceder mas rapido</p>
+        <p v-if="!isStandalone" class="text-xs text-gray-400">Instalala en tu movil para acceder mas rapido</p>
       </div>
       <InstallPwaButton />
       <p v-if="isStandalone" class="text-sm text-success flex items-center gap-1.5">

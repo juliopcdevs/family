@@ -1,5 +1,5 @@
 <template>
-  <div v-if="canInstall">
+  <div v-if="!isStandalone">
     <button
       @click="handleClick"
       class="w-full flex items-center justify-center gap-2 bg-primary text-white py-2.5 rounded-lg font-medium hover:bg-primary/90 active:scale-[0.99] transition-transform"
@@ -12,18 +12,19 @@
       Instalar app
     </button>
 
-    <!-- Modal de instrucciones para iOS (no hay prompt nativo) -->
+    <!-- Instrucciones (iOS o navegadores sin prompt nativo) -->
     <div
-      v-if="showIosHelp"
+      v-if="showHelp"
       class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 px-4"
-      @click.self="showIosHelp = false"
+      @click.self="showHelp = false"
     >
       <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6 space-y-4 mb-4 sm:mb-0">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-800">Instalar en iPhone</h3>
-          <button @click="showIosHelp = false" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          <h3 class="text-lg font-semibold text-gray-800">{{ isIos ? 'Instalar en iPhone' : 'Instalar la app' }}</h3>
+          <button @click="showHelp = false" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
         </div>
-        <ol class="space-y-3 text-sm text-gray-600">
+
+        <ol v-if="isIos" class="space-y-3 text-sm text-gray-600">
           <li class="flex items-start gap-3">
             <span class="shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
             <span>
@@ -41,7 +42,16 @@
             <span>Confirma pulsando <strong>Añadir</strong>.</span>
           </li>
         </ol>
-        <button @click="showIosHelp = false" class="w-full bg-primary text-white py-2.5 rounded-lg font-medium">Entendido</button>
+
+        <div v-else class="space-y-3 text-sm text-gray-600">
+          <p>Tu navegador aun no ofrece la instalacion automatica. Puedes instalarla manualmente:</p>
+          <ul class="space-y-2 list-disc list-inside">
+            <li><strong>Android (Chrome):</strong> menu <strong>⋮</strong> → <strong>Instalar aplicacion</strong> / <strong>Añadir a pantalla de inicio</strong>.</li>
+            <li><strong>Escritorio (Chrome/Edge):</strong> icono de instalar en la barra de direcciones, o menu <strong>⋮</strong> → <strong>Instalar Family Hub</strong>.</li>
+          </ul>
+        </div>
+
+        <button @click="showHelp = false" class="w-full bg-primary text-white py-2.5 rounded-lg font-medium">Entendido</button>
       </div>
     </div>
   </div>
@@ -51,14 +61,17 @@
 import { ref } from 'vue';
 import { usePwaInstall } from '@/composables/usePwaInstall';
 
-const { canInstall, canPromptInstall, isIos, install } = usePwaInstall();
-const showIosHelp = ref(false);
+const { canPromptInstall, isIos, isStandalone, install } = usePwaInstall();
+const showHelp = ref(false);
 
 async function handleClick() {
   if (canPromptInstall.value) {
-    await install();
-  } else if (isIos) {
-    showIosHelp.value = true;
+    const result = await install();
+    // Si el navegador dijo que no habia prompt, cae al modal de ayuda
+    if (result === 'unavailable') showHelp.value = true;
+  } else {
+    // iOS o navegadores sin beforeinstallprompt: instrucciones manuales
+    showHelp.value = true;
   }
 }
 </script>
