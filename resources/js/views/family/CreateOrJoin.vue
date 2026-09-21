@@ -32,7 +32,19 @@
           <h2 class="text-lg font-semibold text-gray-800">Unirse a familia</h2>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Codigo de familia</label>
-            <input v-model="joinCode" type="text" required maxlength="8" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none text-center text-xl tracking-widest font-mono uppercase" placeholder="XXXXXXXX" />
+            <input
+              :value="joinCode"
+              @input="onJoinCodeInput"
+              type="text"
+              required
+              autocapitalize="characters"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              inputmode="text"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none text-center text-xl tracking-widest font-mono uppercase"
+              placeholder="XXXXXXXX"
+            />
           </div>
           <button type="submit" :disabled="loading" class="w-full bg-primary text-white py-2.5 rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50">
             {{ loading ? 'Uniendose...' : 'Unirse' }}
@@ -55,6 +67,16 @@ const joinCode = ref('');
 const error = ref('');
 const loading = ref(false);
 const createdCode = ref('');
+
+// Sanea el codigo al escribir/pegar: mayusculas y solo [A-Z0-9], max 8.
+// Sin maxlength en el input porque iOS Safari descarta el pegado completo si
+// el texto pegado supera maxlength (p.ej. al copiar el codigo con espacios).
+function onJoinCodeInput(e: Event) {
+  const el = e.target as HTMLInputElement;
+  const clean = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  joinCode.value = clean;
+  if (el.value !== clean) el.value = clean;
+}
 
 const whatsappLink = computed(() =>
   `https://wa.me/?text=${encodeURIComponent(`Unete a nuestra familia en Family Hub con el codigo: ${createdCode.value}`)}`
