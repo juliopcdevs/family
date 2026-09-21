@@ -30,3 +30,16 @@
         padding-bottom: 0;
     }
 }
+
+/* Altura util para la vista de calendario (mes a pantalla completa).
+   svh es estable frente a la barra dinamica del navegador movil.
+   Descuenta header movil + paddings de main + navbar inferior. */
+.cal-fill {
+    height: calc(100svh - 8.75rem - env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+    .cal-fill {
+        height: calc(100vh - 3rem);
+    }
+}
