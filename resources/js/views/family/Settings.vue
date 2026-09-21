@@ -24,6 +24,18 @@
         </ul>
       </div>
     </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 space-y-3">
+      <div>
+        <p class="text-sm font-medium text-gray-700">Aplicacion</p>
+        <p class="text-xs text-gray-400">Instalala en tu movil para acceder mas rapido</p>
+      </div>
+      <InstallPwaButton />
+      <p v-if="isStandalone" class="text-sm text-success flex items-center gap-1.5">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        App instalada
+      </p>
+    </div>
+
     <button @click="handleLeave" class="text-error hover:underline text-sm">Salir de la familia</button>
   </div>
 </template>
@@ -32,10 +44,13 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useFamilyStore } from '@/stores/family';
+import { usePwaInstall } from '@/composables/usePwaInstall';
+import InstallPwaButton from '@/components/layout/InstallPwaButton.vue';
 import type { Family } from '@/types';
 
 const router = useRouter();
 const familyStore = useFamilyStore();
+const { isStandalone } = usePwaInstall();
 const family = ref<Family | null>(null);
 
 const whatsappLink = computed(() =>
