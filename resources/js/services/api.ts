@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: '/api',
-  withCredentials: true,
+  // Auth por token Bearer (stateless): no enviamos cookies, evitando la ruta
+  // stateful de Sanctum y su CSRF (que causaba 419 intermitentes en POST).
+  withCredentials: false,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

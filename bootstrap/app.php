@@ -22,7 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'has.family' => \App\Http\Middleware\EnsureFamilyMembership::class,
         ]);
 
-        $middleware->statefulApi();
+        // La SPA autentica con token Bearer (stateless). NO usar statefulApi():
+        // activaba la proteccion CSRF de Sanctum y provocaba 419 intermitentes
+        // en POST/PUT/DELETE (guardar eventos, etc.).
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->renderable(function (NotFoundHttpException $e, $request) {
