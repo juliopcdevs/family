@@ -230,21 +230,16 @@ cleanup_containers() {
 # Remove images
 #######################################
 cleanup_images() {
-    log_step "Cleaning up images"
+    log_step "Reclaiming disk from the previous build"
 
-    # Get image names from compose file
-    local images=$(docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" config --images 2>/dev/null | grep "$PROJECT_NAME" || true)
-
-    if [[ -n "$images" ]]; then
-        log_info "Removing project images..."
-        echo "$images" | xargs -r docker rmi -f 2>/dev/null || true
-    fi
-
-    # Also remove any dangling images
+    # Se ejecuta DESPUES de levantar los contenedores nuevos, asi que solo
+    # limpia lo que quedo colgando (dangling). No hace `docker rmi` de las
+    # imagenes del proyecto porque estan en uso por los contenedores recien
+    # arrancados.
     log_info "Removing dangling images..."
     docker image prune -f 2>/dev/null || true
 
-    log_success "Images cleaned up"
+    log_success "Disk reclaimed"
 }
 
 #######################################
@@ -311,8 +306,11 @@ setup_env() {
 #######################################
 # Build and start containers
 #######################################
-build_and_start() {
-    log_step "Building and starting containers"
+# Construye la imagen nueva con los contenedores viejos AUN SIRVIENDO. El build
+# --no-cache tarda varios minutos; hacerlo antes de parar nada reduce el corte
+# a los segundos que cuesta el swap (ver start_containers). No mezclar con up -d.
+build_images() {
+    log_step "Building images (site still up)"
 
     # Clear Docker builder cache
     log_info "Clearing Docker builder cache..."
@@ -322,7 +320,13 @@ build_and_start() {
     log_info "Building images (no cache, pulling fresh base images)..."
     docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" build --no-cache --pull
 
-    # Start containers
+    log_success "Images built — the site has stayed up until now"
+}
+
+# Levanta los contenedores desde la imagen ya construida (rapido).
+start_containers() {
+    log_step "Starting containers"
+
     log_info "Starting containers..."
     docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" up -d
 
@@ -467,13 +471,16 @@ main() {
         exit 0
     fi
 
+    # El codigo y la imagen se preparan primero, con los contenedores viejos aun
+    # sirviendo; solo entonces se hace el swap. Ver build_images() / start_containers().
     check_prerequisites
-    cleanup_containers
-    cleanup_images
-    cleanup_volumes
     git_update
     setup_env
-    build_and_start
+    build_images
+    cleanup_containers
+    cleanup_volumes
+    start_containers
+    cleanup_images
     laravel_setup
     show_status
 
